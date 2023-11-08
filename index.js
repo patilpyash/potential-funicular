@@ -80,6 +80,31 @@ app.post('/register', (req, res) => {
     });
 });
 
+/**
+ * @openapi
+ * /forgot-password:
+ *   post:
+ *     summary: Request password reset
+ *     description: Request a password reset by providing your email address. A reset token will be sent to your email.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Password reset token sent to your email
+ *       '400':
+ *         description: Bad request (missing or invalid parameters)
+ *       '404':
+ *         description: User not found
+ *       '500':
+ *         description: Internal server error
+ */
 app.post('/forgot-password', (req, res) => {
     const { email } = req.body;
 
@@ -118,6 +143,35 @@ app.post('/forgot-password', (req, res) => {
     });
 });
 
+/**
+ * @openapi
+ * /reset-password:
+ *   post:
+ *     summary: Reset user password
+ *     description: Reset a user's password by providing a valid reset token, email, and a new password.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               resetToken:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Password reset successful
+ *       '400':
+ *         description: Bad request (missing or invalid parameters)
+ *       '401':
+ *         description: Unauthorized (invalid or expired reset token)
+ *       '500':
+ *         description: Internal server error
+ */
 app.post('/reset-password', (req, res) => {
     const { email, resetToken, newPassword } = req.body;
 
