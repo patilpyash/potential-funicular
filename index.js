@@ -3,6 +3,8 @@ const express = require('express');
 const mysql = require('mysql');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt'); // Adding bcrypt for password hashing
+const { swaggerUi, swaggerSpec } = require('./swagger'); // Import your Swagger configuration
+
 
 // create connection
 const db = mysql.createConnection({
@@ -24,8 +26,33 @@ db.connect((err) => {
 // create Express app
 const app = express();
 app.use(express.json()); // Parse JSON request bodies
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // register route
+/**
+ * @openapi
+ * /register:
+ *   post:
+ *     summary: Register a new user
+ *     description: Register a new user with a name, email, and password.
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: User registered successfully
+ *       '400':
+ *         description: Bad request
+ */
 app.post('/register', (req, res) => {
     // get user data from request
     const { name, email, password } = req.body;
@@ -52,6 +79,48 @@ app.post('/register', (req, res) => {
 });
 
 // login route
+/**
+ * @openapi
+ * /login:
+ *   post:
+ *     summary: User login
+ *     description: Authenticate and log in a user with their email and password.
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: User logged in successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: number
+ *                     name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *       '400':
+ *         description: Bad request
+ *       '401':
+ *         description: Unauthorized (Invalid credentials)
+ *       '500':
+ *         description: Internal server error
+ */
 app.post('/login', (req, res) => {
     // get user data from request
     const { email, password } = req.body;
