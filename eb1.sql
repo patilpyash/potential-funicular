@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 08, 2023 at 10:06 PM
+-- Generation Time: Nov 08, 2023 at 11:04 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -30,15 +30,28 @@ SET time_zone = "+00:00";
 CREATE TABLE `users` (
   `name` varchar(20) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `password` varchar(60) NOT NULL
+  `password` varchar(60) NOT NULL,
+  `reset_token` varchar(64) DEFAULT NULL,
+  `reset_token_expiration` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`name`, `email`, `password`) VALUES
-('Yash', 'patilpyash@gmail.com', '$2b$10$FM.Mb91qWHsjNNL4fMHDK.8UvQaJ5olOOBreoXrZiCQZiBG5YVcAq');
+INSERT INTO `users` (`name`, `email`, `password`, `reset_token`, `reset_token_expiration`) VALUES
+('Yash', 'patilpyash@gmail.com', '$2b$10$PKEVrw8fhKGE4RlT/TE7eOmO2OO3Q75qC2sDivuHWyDQRGUm6tOXK', NULL, NULL),
+('Yash', 'test@email.com', '$2b$10$jdYPfnKZP.M0GyOm0nHxFerlflVrUaacY2BFk/LZWEhTuvfmVusG.', '', '2023-11-08 21:45:03');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD UNIQUE KEY `email` (`email`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
