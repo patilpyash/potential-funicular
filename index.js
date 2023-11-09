@@ -244,7 +244,7 @@ function sendResetTokenEmail(email, resetToken) {
         }
     });
     */
-   console.log(resetToken)
+    console.log(resetToken)
 }
 
 // login route
@@ -317,7 +317,15 @@ app.post('/login', (req, res) => {
             }
 
             // Set token expiration to 1 minute (60 seconds) from the current time
-            const token = jwt.sign({ id: user.id, exp: Math.floor(Date.now() / 1000) + 60 }, 'secretkey');
+            const token = jwt.sign(
+                {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    exp: Math.floor(Date.now() / 1000) + 60,
+                },
+                'secretkey'
+            );
             return res.json({
                 token,
                 user: {
@@ -336,11 +344,9 @@ app.get('/user', authenticateToken, (req, res) => {
     // get user data from JWT token
     const user = req.user;
 
-    // send user's email
-    res.json({ email: user.email });
+    // send user's information
+    res.json({ user });
 });
-
-
 
 
 function authenticateToken(req, res, next) {
