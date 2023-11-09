@@ -53,7 +53,7 @@ router.post('/forgot-password', (req, res) => {
         const user = result[0];
 
         // Generate a unique reset token (e.g., a random string)
-        const resetToken = generateResetToken();
+        const resetToken = generateToken();
 
         // Store the reset token and its expiration time in the database
         const resetTokenExpiration = new Date();

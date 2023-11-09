@@ -3,7 +3,9 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 function generateToken(payload) {
-    return jwt.sign(payload, 'secretkey');
+        // You can use a library like 'crypto' to generate a secure random token
+        const token = require('crypto').randomBytes(32).toString('hex');
+        return token;
 }
 
 function authenticateToken(req, res, next) {
