@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 08, 2023 at 11:04 PM
+-- Generation Time: Nov 09, 2023 at 08:56 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -28,20 +28,13 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
   `name` varchar(20) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `password` varchar(60) NOT NULL,
-  `reset_token` varchar(64) DEFAULT NULL,
+  `password` varchar(100) NOT NULL,
+  `reset_token` varchar(100) DEFAULT NULL,
   `reset_token_expiration` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`name`, `email`, `password`, `reset_token`, `reset_token_expiration`) VALUES
-('Yash', 'patilpyash@gmail.com', '$2b$10$PKEVrw8fhKGE4RlT/TE7eOmO2OO3Q75qC2sDivuHWyDQRGUm6tOXK', NULL, NULL),
-('Yash', 'test@email.com', '$2b$10$jdYPfnKZP.M0GyOm0nHxFerlflVrUaacY2BFk/LZWEhTuvfmVusG.', '', '2023-11-08 21:45:03');
 
 --
 -- Indexes for dumped tables
@@ -51,7 +44,18 @@ INSERT INTO `users` (`name`, `email`, `password`, `reset_token`, `reset_token_ex
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
