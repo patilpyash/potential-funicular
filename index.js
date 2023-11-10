@@ -264,6 +264,8 @@ function sendResetTokenEmail(email, resetToken) {
  *                 type: string
  *               password:
  *                 type: string
+ *               stayLoggedIn:
+ *                 type: boolean  // Add a new field for "Stay Logged In"
  *     responses:
  *       '200':
  *         description: User logged in successfully
@@ -292,7 +294,7 @@ function sendResetTokenEmail(email, resetToken) {
  */
 app.post('/login', (req, res) => {
     // get user data from request
-    const { email, password } = req.body;
+    const { email, password, stayLoggedIn } = req.body;
 
     // validate
     if (!email || !password) {
@@ -316,16 +318,20 @@ app.post('/login', (req, res) => {
                 return res.status(401).json({ msg: 'Invalid credentials!' });
             }
 
-            // Set token expiration to 1 minute (60 seconds) from the current time
+            // Set token expiration to 1 minute if not staying logged in, otherwise, set it to a longer duration
+            const expiresIn = stayLoggedIn ? '7d' : '1m';
+
+            // Sign JWT token
             const token = jwt.sign(
                 {
                     id: user.id,
                     name: user.name,
                     email: user.email,
-                    exp: Math.floor(Date.now() / 1000) + 60,
                 },
-                'secretkey'
+                'secretkey',
+                { expiresIn }
             );
+            
             return res.json({
                 token,
                 user: {

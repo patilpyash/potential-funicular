@@ -115,50 +115,54 @@ router.post('/reset-password', (req, res) => {
 
 router.post('/login', (req, res) => {
      // get user data from request
-     const { email, password } = req.body;
+    const { email, password, stayLoggedIn } = req.body;
 
-     // validate
-     if (!email || !password) {
-         return res.status(400).json({ msg: 'Please enter email and password' });
-     }
- 
-     // check if user exists
-     db.query('SELECT * FROM users WHERE email = ?', [email], (err, result) => {
-         if (err) {
-             return res.status(500).json({ msg: err });
-         }
-         if (result.length === 0) {
-             return res.status(401).json({ msg: 'User not found!' });
-         }
- 
-         const user = result[0];
- 
-         // Compare hashed password
-         bcrypt.compare(password, user.password, (bcryptErr, passwordMatch) => {
-             if (bcryptErr || !passwordMatch) {
-                 return res.status(401).json({ msg: 'Invalid credentials!' });
-             }
- 
-             // Set token expiration to 1 minute (60 seconds) from the current time
-             const token = jwt.sign(
-                 {
-                     id: user.id,
-                     name: user.name,
-                     email: user.email,
-                     exp: Math.floor(Date.now() / 1000) + 60,
-                 },
-                 'secretkey'
-             );
-             return res.json({
-                 token,
-                 user: {
-                     id: user.id,
-                     name: user.name,
-                     email: user.email,
-                 },
-             });
-         });
-     });
+    // validate
+    if (!email || !password) {
+        return res.status(400).json({ msg: 'Please enter email and password' });
+    }
+
+    // check if user exists
+    db.query('SELECT * FROM users WHERE email = ?', [email], (err, result) => {
+        if (err) {
+            return res.status(500).json({ msg: err });
+        }
+        if (result.length === 0) {
+            return res.status(401).json({ msg: 'User not found!' });
+        }
+
+        const user = result[0];
+
+        // Compare hashed password
+        bcrypt.compare(password, user.password, (bcryptErr, passwordMatch) => {
+            if (bcryptErr || !passwordMatch) {
+                return res.status(401).json({ msg: 'Invalid credentials!' });
+            }
+
+            // Set token expiration to 1 minute if not staying logged in, otherwise, set it to a longer duration
+            const expiresIn = stayLoggedIn ? '7d' : '1m';
+
+            // Sign JWT token
+            const token = jwt.sign(
+                {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                },
+                'secretkey',
+                { expiresIn }
+            );
+            
+            return res.json({
+                token,
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                },
+            });
+        });
+    });
 });
 
 router.get('/user', authenticateToken, (req, res) => {
