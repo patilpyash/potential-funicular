@@ -8,6 +8,10 @@ const { sendResetTokenEmail } = require('./email');
 
 const router = express.Router();
 
+router.get('/', (req, res) => {
+    res.send('Hello, World!');
+});
+
 router.post('/register', (req, res) => {
     // get user data from request
     const { name, email, password } = req.body;
