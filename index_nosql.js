@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { swaggerUi, swaggerSpec } = require('./swagger');
 const crypto = require('crypto');
-
+require('dotenv').config();
 
 // Start server
 const app = express();
@@ -14,7 +14,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Connect to MongoDB
 // const client = new MongoClient('mongodb://localhost:27017', { useNewUrlParser: true, useUnifiedTopology: true });
 
-const uri = "mongodb+srv://patilpyash:yash8920@cluster-0.ivvahco.mongodb.net/?retryWrites=true&w=majority";
+const uri = process.env.DB_CONNECTION_STRING;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -35,7 +35,7 @@ client.connect((err) => {
     }
 });
 
-const db = client.db('eb1');
+const db = client.db(process.env.DB_NAME || 'db2');
 
 // Register route
 app.post('/register', async (req, res) => {
@@ -139,10 +139,10 @@ app.post('/login', async (req, res) => {
         }
 
         const expiresIn = stayLoggedIn ? '7d' : '1m';
-
+        const jwtSecretKey = process.env.JWT_SECRET || 'secretkey';
         const token = jwt.sign(
             { id: user._id, name: user.name, email: user.email },
-            'secretkey',
+            jwtSecretKey,
             { expiresIn }
         );
 
@@ -168,8 +168,8 @@ function authenticateToken(req, res, next) {
     if (!token) {
         return res.status(401).json({ msg: 'No token found!' });
     }
-
-    jwt.verify(token, 'secretkey', (err, user) => {
+    const jwtSecretKey = process.env.JWT_SECRET || 'secretkey';
+    jwt.verify(token, jwtSecretKey, (err, user) => {
         if (err) {
             return res.status(403).json({ msg: 'Invalid or expired token!' });
         }
